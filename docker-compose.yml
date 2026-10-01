@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: apilm_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: mi_api_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: apilm_api
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:admin@postgres:5432/mi_api_db?schema=public
+      - PORT=3000
+    depends_on:
+      - postgres
+    volumes:
+      - .:/app
+      - /app/node_modules

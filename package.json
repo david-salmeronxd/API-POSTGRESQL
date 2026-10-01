@@ -1,0 +1,10 @@
+{
+  "name": "apilm",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/iindex.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon src/index.js"
+  }
+}
