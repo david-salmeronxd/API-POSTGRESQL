@@ -3,24 +3,51 @@ import { PrismaClient } from '@prisma/client';
 
 const app = express();
 const prisma = new PrismaClient();
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-app.get('/productos', async (req, res) => {
-  const productos = await prisma.producto.findMany();
-  res.json(productos);
+app.get('/', (req, res) => {
+  res.json({ message: 'API en ejecución' });
 });
 
-
-app.post('/productos', async (req, res) => {
-  const { nombre, precio } = req.body;
-  const nuevoProducto = await prisma.producto.create({
-    data: { nombre, precio: parseFloat(precio) }
-  });
-  res.status(201).json(nuevoProducto);
+app.get('/api/productos', async (req, res) => {
+  try {
+    const productos = await prisma.product.findMany();
+    res.json(productos);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener productos', details: error.message });
+  }
 });
 
-const PORT = process.env.PORT || 3000;
+app.post('/api/productos', async (req, res) => {
+  try {
+    const { nombre, precio, descripcion } = req.body;
+    const nuevoProducto = await prisma.product.create({
+      data: {
+        nombre,
+        precio: parseFloat(precio),
+        descripcion
+      }
+    });
+    res.status(201).json(nuevoProducto);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al crear producto', details: error.message });
+  }
+});
+
+app.delete('/api/productos/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const productoEliminado = await prisma.product.delete({
+      where: { id: parseInt(id) }
+    });
+    res.json({ message: 'Producto eliminado correctamente', producto: productoEliminado });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al eliminar producto', details: error.message });
+  }
+});
+
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor corriendo en puerto ${PORT}`);
 });

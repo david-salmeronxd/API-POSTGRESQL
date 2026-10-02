@@ -1,16 +1,19 @@
+version: '3.8'
+
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:15-alpine
     container_name: apilm_postgres
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: mi_api_db
     ports:
       - "5432:5432"
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   api:
     build: .
@@ -19,10 +22,10 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=postgresql://postgres:admin@postgres:5432/mi_api_db?schema=public
-      - PORT=3000
+      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/mi_api_db?schema=public"
+      PORT: 3000
     depends_on:
       - postgres
-    volumes:
-      - .:/app
-      - /app/node_modules
+
+volumes:
+  postgres_data:
