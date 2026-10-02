@@ -1,69 +1,179 @@
 # API RESTful con Node.js, Express, Prisma y PostgreSQL
 
-> **Autor:** David Salmeron  
-> **Licencia:** Código Libre (Open Source)
+> **Autor:** David Salmerón  
+> **Licencia:** GNU General Public License v2.0 (GPL-2.0)
 
-Esta API sirve principalmente como entorno de prueba y demostración. Si deseas utilizarla en un entorno de producción o para un uso real, queda a tu total discreción y responsabilidad. ¡Es de código libre, por lo que cualquiera es libre de modificarla, mejorarla o hacer lo que quiera con ella! :D
+Esta API y su cliente gráfico en Python sirven como entorno de prueba y desarrollo. Es un proyecto de código abierto distribuido bajo la licencia **GPLv2**, por lo que eres libre de clonar, modificar, redistribuir y mejorar el código.
 
 ---
 
 ## 📋 Requisitos Previos
 
-Para poder clonar y ejecutar esta API en tu máquina local sin necesidad de instalar PostgreSQL ni Node.js directamente en el sistema operativo, únicamente necesitas tener instalado:
+Solo necesitas **Git** y **Docker** instalados en tu sistema. No es necesario instalar Node.js ni PostgreSQL directamente en el sistema operativo.
 
-1. **Git** (para clonar el repositorio)
-2. **Docker** y **Docker Compose** (para levantar la API y la base de datos de manera autocontenida)
+### Instalación de Requisitos
 
-### Instrucciones de Instalación de Requisitos
+**En Arch Linux:**
 
-* **En Arch Linux:**
-  ```bash
-  sudo pacman -S git docker docker-compose
-  sudo systemctl enable --now docker
-
-
-
-
-  UBUNTU/DEBIAN
-  sudo apt update
-sudo apt install git docker.io docker-compose-v2
+```bash
+sudo pacman -S git docker docker-compose
 sudo systemctl enable --now docker
+sudo usermod -aG docker $USER
+```
 
+**En Ubuntu / Debian:**
 
+```bash
+sudo apt update
+sudo apt install -y git docker.io docker-compose-v2
+sudo systemctl enable --now docker
+sudo usermod -aG docker $USER
+```
 
-En Windows / macOS:
-Instala Docker Desktop, el cual ya incluye Git Bash, Docker Engine y Docker Compose.
+**En Windows:**
 
+Instala Docker Desktop y Git for Windows. Asegúrate de iniciar Docker Desktop antes de ejecutar los comandos.
 
+## 🚀 Guía de Inicio Rápido
 
+### 1. Clonar el repositorio
 
-Clonar repositorio
-git clone <URL_REPO>
-cd APILM
+```bash
+git clone <URL_DE_TU_REPOSITORIO>
+cd API-POSTGRESQL
+```
 
-Variables de entorno
+### 2. Configurar variables de entorno
+
+Crea tu archivo `.env` a partir del ejemplo:
+
+```bash
 cp .env.example .env
+```
 
-Levantar el contenedor docker
+### 3. Levantar los contenedores de Docker
+
+Este comando descargará PostgreSQL, compilará la API de Express y ejecutará las migraciones de Prisma automáticamente.
+
+**En Linux:**
+
+```bash
 sudo docker compose up -d --build
+```
 
-sincronizar
-sudo docker exec -it apilm_api npx prisma db push
+**En Windows (CMD / PowerShell):**
 
+```dos
+docker compose up -d --build
+```
 
-Consultas
-curl http://localhost:3000/productos
+## 🖥️ Uso de la Aplicación Gráfica (Python / Tkinter)
 
+El proyecto incluye una interfaz gráfica para administrar el inventario de productos en tiempo real.
 
-Crear un producto 
-curl -X POST http://localhost:3000/productos \
+### Opción A: Ejecutables precompilados (Sin instalar Python)
+
+**En Arch Linux:**
+
+```bash
+./dist/appa/appa
+```
+
+**En Windows:**
+
+Haz doble clic en `dist/appw.exe` o ejecútalo desde CMD:
+
+```dos
+.\dist\appw.exe
+```
+
+### Opción B: Ejecutar desde el código fuente Python
+
+Si tienes Python instalado en tu sistema:
+
+```bash
+python app.py
+```
+
+## 📡 Endpoints de la API REST
+
+Si prefieres probar la API directamente mediante curl o Postman:
+
+| Método | Endpoint | Descripción |
+| --- | --- | --- |
+| GET | `/` | Estado del servidor |
+| GET | `/api/productos` | Obtener la lista completa de productos |
+| POST | `/api/productos` | Crear un nuevo producto |
+| DELETE | `/api/productos/:id` | Eliminar un producto por su ID |
+
+### Ejemplos con curl
+
+Obtener todos los productos:
+
+```bash
+curl -i http://localhost:3000/api/productos
+```
+
+Crear un nuevo producto:
+
+```bash
+curl -i -X POST http://localhost:3000/api/productos \
   -H "Content-Type: application/json" \
-  -d '{"nombre": "Laptop", "precio": 1200}'
+  -d '{"nombre": "Teclado Mecánico", "precio": 85.50, "descripcion": "Switch Red RGB"}'
+```
 
+Eliminar un producto por ID:
 
-  Logs de la api
-  sudo docker compose logs -f api
+```bash
+curl -i -X DELETE http://localhost:3000/api/productos/1
+```
 
-  Detener servicio del docker
-  sudo docker compose down
+## 🗄 Consultar Base de Datos desde Terminal (psql)
 
+Para verificar las tablas directamente en la base de datos PostgreSQL:
+
+**En Linux:**
+
+```bash
+sudo docker compose exec postgres psql -U postgres -d mi_api_db -c 'SELECT * FROM "Product";'
+```
+
+**En Windows (CMD / PowerShell):**
+
+```dos
+docker compose exec postgres psql -U postgres -d mi_api_db -c "SELECT * FROM \"Product\";"
+```
+
+## 🛠 Comandos de Mantenimiento
+
+Ver logs del servidor en tiempo real:
+
+```bash
+docker compose logs -f api
+```
+
+Reiniciar el servidor de la API:
+
+```bash
+docker compose restart api
+```
+
+Detener todos los servicios:
+
+```bash
+docker compose down
+```
+
+## 📜 Licencia
+
+Este proyecto está bajo la Licencia GNU General Public License v2.0 (GPLv2).
+
+### GNU GENERAL PUBLIC LICENSE
+
+Version 2, June 1991
+
+Copyright (C) 2026 David Salmerón.
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
